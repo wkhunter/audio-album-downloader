@@ -10,6 +10,7 @@ import requests
 XMLY album downloader
 '''
 class Downloader():
+    _dist = '.'
     _list = []
     _albumTitle = ''
 
@@ -44,11 +45,13 @@ class Downloader():
 
 
     # 开始执行所有下载操作
-    def __init__(self, albumUrl):
+    def __init__(self, albumUrl, dist):
         if __name__ == '__main__':
             if albumUrl:
                 print 'You input album link: %s' % albumUrl
             self.getData(albumUrl)
+            if dist:
+                self._dist = dist
             if len(self._list) > 0:
                 # 下载并命名归类文件
                 self.downloadFiles(self._albumTitle)
@@ -59,21 +62,23 @@ class Downloader():
     # 下载文件
     def downloadFiles(self, albumTitle):
         # 创建文件夹
-        if False == os.path.isdir(albumTitle):
-            os.mkdir(albumTitle)
+        dist = os.path.join(self._dist, albumTitle)
+        if False == os.path.isdir(dist):
+            os.mkdir(dist)
+            print dist
 
         for item in self._list:
-            self.downloadFile(item)
+            self.downloadFile(item, dist)
         
         print albumTitle + str(len(self._list)) + ' files download completed.'
         return
 
-    def downloadFile(self, item):
+    def downloadFile(self, item, dist):
         # 取文件扩展名称
         def getFileExp(file):
             return '.' + file[-3:]
 
-        fileName = self._albumTitle + '/' + item['name'] + getFileExp(item['downloadUrl'])
+        fileName = dist + '/' + item['name'] + getFileExp(item['downloadUrl'])
 
         if not os.path.isfile(fileName):
             try:
@@ -89,5 +94,11 @@ def waitAlbumUrl():
     albumUrl = raw_input(msg).decode(sys.stdin.encoding)
     return albumUrl
 
+def waitDist():
+    msg = '请输入文件保存路径: \n'
+    dist = raw_input(msg).decode(sys.stdin.encoding)
+    return dist
+
 albumUrl = waitAlbumUrl()
-Downloader(albumUrl)
+dist = waitDist()
+Downloader(albumUrl, dist)
