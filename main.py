@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import DownloaderClass
+from Ximalaya import Ximalaya
+from Qingting import Qingting
+
 try:
       import readline
 except ImportError:
@@ -32,5 +34,11 @@ def restart_program():
 
 albumUrl = len(sys.argv) > 1 and sys.argv[1] or waitAlbumUrl()
 dist = len(sys.argv) > 2 and sys.argv[2] or waitDist()
-DownloaderClass.Downloader(albumUrl, dist)
+if 'ximalaya' in albumUrl:
+    Ximalaya(albumUrl, dist)
+elif 'qingting' in albumUrl:
+    Qingting(albumUrl, dist)
+else:
+    print '输入不正确！'.decode('utf-8')
+
 restart_program()

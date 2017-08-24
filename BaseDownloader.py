@@ -29,64 +29,8 @@ class Downloader():
     _list = []
     _albumTitle = ''
 
-    # 获取下载链接
-    def getXMLYData(self, albumUrl):
-        urlSlices = albumUrl.split('/')
-        albumId = urlSlices[len(urlSlices) - 1] or urlSlices[len(urlSlices) - 2]
-        r = requests.get("http://mobile.ximalaya.com/mobile/v1/album", params={"albumId": albumId, "pageSize": 500})
-        # listJson = json.loads(r.text)
-        try:
-            listJson = r.json()
-        except:
-            print 'Error: no json data, url may be not right'
-            return
-        
-        # if listJson.has_key('albumTitle'):
-        if listJson['data']['album']['title']:
-            self._albumTitle = listJson['data']['album']['title'] + '-xmly-' + albumId
-            print '专辑名称: '.decode('utf-8') + self._albumTitle
-
-        # if listJson.has_key('data'):
-        if listJson['data']['tracks']['list']:
-            musicList = listJson['data']['tracks']['list']
-            if len(musicList) > 0:
-                # 所有下载链接
-                for music in musicList:
-                    self._list.append({
-                        'downloadUrl': music['playUrl64'],
-                        'name': music['title']
-                    })
-
-    # 获取蜻蜓FM下载链接
-    def getQTFMData(self, albumUrl):
-        urlSlices = albumUrl.split('/')
-        albumId = urlSlices[len(urlSlices) - 1] or urlSlices[len(urlSlices) - 2]
-        rAlbum = requests.get("http://i.qingting.fm/wapi/channels/" + albumId)
-        r = requests.get("http://i.qingting.fm/wapi/channels/" + albumId + "/programs/page/1/pagesize/500")
-        # listJson = json.loads(r.text)
-        try:
-            albumInfo = rAlbum.json()
-            listJson = r.json()
-        except Exception,e:
-            print e
-            print 'Error: no json data, url may be not right'
-            return
-        
-        if albumInfo['data']['name']:
-            self._albumTitle = albumInfo['data']['name'] + '-qtfm-' + albumId
-            print '专辑名称: '.decode('utf-8') + self._albumTitle
-
-        # if listJson.has_key('data'):
-        if listJson['data']:
-            musicList = listJson['data']
-            if len(musicList) > 0:
-                # 所有下载链接
-                for music in musicList:
-                    self._list.append({
-                        'downloadUrl': 'http://od.qingting.fm/' + music['file_path'],
-                        'name': music['name']
-                    })
-
+    def getData (self, albumUrl):
+        print '@TODO: get data...'
 
     # 开始执行所有下载操作
     def __init__(self, albumUrl, dist):
@@ -95,10 +39,7 @@ class Downloader():
 
         # TODO: 通过 interface 重构，在 main 中进行 url 判断
         
-        if 'ximalaya' in albumUrl:
-            self.getXMLYData(albumUrl)
-        elif 'qingting' in albumUrl:
-            self.getQTFMData(albumUrl)
+        self.getData(albumUrl)
 
         if dist:
             self._dist = os.path.expanduser(dist)
@@ -142,6 +83,9 @@ class Downloader():
         return
 
     def downloadFile(self, item, dist):
+        if item['downloadUrl'] is None:
+            return
+
         # 取文件扩展名称
         def getFileExp(file):
             return '.' + file[-3:]
