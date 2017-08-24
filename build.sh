@@ -3,3 +3,5 @@
 rm -r build
 rm -r dist
 pyinstaller main.py --onefile
+# windows
+# pyinstaller main.py --onefile --noupx --icon=icon.ico
