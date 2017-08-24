@@ -7,6 +7,9 @@ import sys
 import requests
 import socket
 import webbrowser
+import gevent
+from gevent import socket
+from gevent import monkey; monkey.patch_all()
 socket.setdefaulttimeout(60.0)
 
 '''
@@ -108,8 +111,8 @@ class Downloader():
             webbrowser.open(self._dist.encode('utf-8'))
         else:
             print '输入不正确！'.decode('utf-8')
-            raw_input(u'按回车键退出程序'.encode(sys.stdin.encoding))
-            sys.exit('Bye!')
+            # raw_input(u'按回车键退出程序'.encode(sys.stdin.encoding))
+            # sys.exit('Bye!')
 
     # 下载文件
     def downloadFiles(self, albumTitle):
@@ -129,8 +132,11 @@ class Downloader():
         print '文件保存路径: '.decode('utf-8') + os.path.abspath(dist)
 
         print '\n开始下载, 请勿关闭程序...\n'.decode('utf-8')
-        for item in self._list:
-            self.downloadFile(item, dist)
+        # for item in self._list:
+            # self.downloadFile(item, dist)
+        
+        jobs = [gevent.spawn(self.downloadFile, item, dist) for item in self._list]
+        gevent.joinall(jobs, timeout=600)
         
         print '\n' + albumTitle + ' ' + str(len(self._list)) + ' files 下载完毕\n'.decode('utf-8')
         return
