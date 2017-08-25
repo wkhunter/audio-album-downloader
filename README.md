@@ -9,3 +9,7 @@ pip install requests
 pip install gevent
 python main.py
 ```
+
+预览
+
+![效果预览](https://ww2.sinaimg.cn/large/6938e3c3gy1fivpd5gtyxj20ie0mcq6w)
